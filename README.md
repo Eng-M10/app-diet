@@ -1,66 +1,99 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Diet App
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Descrição
+O **Diet App** é uma aplicação voltada para ajudar usuários a gerenciar sua alimentação diária de maneira personalizada. A plataforma oferece ferramentas para calcular as necessidades calóricas, sugerir refeições baseadas em preferências e restrições alimentares, além de fornecer feedback para que os usuários possam atingir seus objetivos de saúde e bem-estar.
 
-## About Laravel
+## Funcionalidades Principais
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Cadastro de Usuário**:  
+  Permite que os usuários se registrem e armazenem informações pessoais, como:
+    - Idade
+    - Peso
+    - Altura
+    - Objetivos (perder peso, manter peso, ganhar massa muscular)
+    - Restrições alimentares (intolerâncias, alergias)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Cálculo de Necessidades Calóricas**:  
+  O app utiliza fórmulas científicas, como a **Mifflin-St Jeor**, para calcular a quantidade de calorias que o usuário precisa diariamente, considerando o metabolismo basal e o nível de atividade física.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Sugestões de Refeições**:  
+  O app sugere refeições saudáveis e adequadas com base nas preferências e restrições alimentares do usuário, ajudando a atingir os objetivos de saúde estabelecidos.
 
-## Learning Laravel
+- **Registo de Alimentos**:  
+  Os usuários podem registrar o que consumiram ao longo do dia, com o cálculo automático da ingestão calórica. Isso inclui:
+    - Base de dados de alimentos com valores nutricionais
+    - Rastreamento em tempo real das calorias ingeridas
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Feedback e Relatórios**:  
+  O app gera relatórios diários ou semanais com feedbacks sobre a ingestão calórica, comparando o consumo com as metas definidas. O feedback inclui:
+    - Total de calorias ingeridas
+    - Comparação com a meta calórica diária
+    - Sugestões para melhorar os hábitos alimentares
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Tecnologias Utilizadas
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Frontend**: React.js com Tailwind CSS
+- **Backend**: Laravel (API RESTful)
+- **Banco de Dados**: MySQL
+- **Autenticação**: JWT (JSON Web Token)
 
-## Laravel Sponsors
+## Como Executar o Projeto
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Pré-requisitos
 
-### Premium Partners
+Antes de começar, certifique-se de ter o [Node.js](https://nodejs.org/) e o [Composer](https://getcomposer.org/) instalados.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Frontend (React.js)
 
-## Contributing
+1. Clone o repositório:
+    ```bash
+    git clone https://github.com/Eng-M10/diet-app.git
+    cd diet-app/frontend
+    ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+2. Instale as dependências:
+    ```bash
+    npm install
+    ```
 
-## Code of Conduct
+3. Execute o app:
+    ```bash
+    npm start
+    ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+O frontend estará rodando em `http://localhost:3000`.
 
-## Security Vulnerabilities
+### Backend (Laravel)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. Navegue para a pasta do backend:
+    ```bash
+    cd ../backend
+    ```
 
-## License
+2. Instale as dependências do Laravel:
+    ```bash
+    composer install
+    ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+3. Configure o arquivo `.env` com as credenciais de banco de dados e JWT:
+
+4. Execute as migrações do banco de dados:
+    ```bash
+    php artisan migrate
+    ```
+
+5. Inicie o servidor do Laravel:
+    ```bash
+    php artisan serve
+    ```
+
+O backend estará rodando em `http://localhost:8000`.
+
+## Contribuições
+
+Contribuições são bem-vindas! Sinta-se à vontade para enviar pull requests ou relatar problemas na aba de [issues](https://github.com/seu-usuario/diet-app/issues).
+
+## Licença
+
+Este projeto está licenciado sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+

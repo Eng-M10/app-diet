@@ -203,59 +203,6 @@ public function updatePassword(Request $request): JsonResponse
     return response()->json(['message' => 'Senha atualizada com sucesso!']);
 }
 
-    public function update(Request $request, $id): JsonResponse
-    {
-        try{
-            // Encontrar o Utilizador pelo ID
-            $user = User::findOrFail($id);
-            // Validar os dados de entrada
-            $validated = $request->validate([
-                'nome' => 'sometimes|required|string|max:255',
-                'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $user->id,
-                'genero' => 'sometimes|required|in:1,2',
-                'senha' => 'sometimes|required|string|min:8',
-                'idade' => 'sometimes|required|integer',
-                'peso' => 'sometimes|required|numeric',
-                'altura' => 'sometimes|required|numeric',
-                'objectivos'=> 'sometimes|required|string',
-                'restricoes' => 'sometimes|required|string|max:100',
-            ]);
-            // Calcular a Taxa Metabólica Basal (TMB)
-            $tmb = 0;
-            if (intval($validated['genero']) === 1) {
-                $tmb = (10 * intval($validated['peso'])) + (6.25 * intval($validated['altura'])) - (5 * intval($validated['idade'])) + 5;
-            } elseif (intval($validated['genero']) === 2) {
-                $tmb = (10 * intval($validated['peso'])) + (6.25 * intval($validated['altura'])) - (5 * intval($validated['idade'])) - 161;
-            }
-            // Calcular a necessidade calórica com base nos objetivos
-            $nsc = $tmb;
-            if ($validated['objectivos'] === 'Perder peso') {
-                $nsc = $tmb - 500;
-            } elseif ($validated['objectivos'] === 'Ganhar massa muscular') {
-                $nsc = $tmb + 1000;
-            }
-            // Atualizar o Utilizador com os dados validados
-            $user->update([
-                'name' => $validated['nome'] ?? $user->name,
-                'email' => $validated['email'] ?? $user->email,
-                'password' => isset($validated['senha']) ? Hash::make($validated['senha']) : $user->password,
-                'idade' => $validated['idade'] ?? $user->idade,
-                'sexo' => isset($validated['genero']) && $validated['genero'] === 2 ? "Mulher" : "Homem",
-                'peso' => $validated['peso'] ?? $user->peso,
-                'altura' => $validated['altura'] ?? $user->altura,
-                'objetivo' => $validated['objectivos'] ?? $user->objetivo,
-                'restricoes' => $validated['restricoes'] ?? $user->restricoes,
-                'necessidade_calorica' => $nsc ?? $user->necessidade_calorica,
-            ]);
-            return response()->json([
-                'message' => 'Utilizador atualizado com sucesso!'
-            ]);
-        }catch(\Exception $e) {
-            return response()->json([
-                'message' => 'Erro ao atualizar Utilizador: ' . $e->getMessage()
-            ], 500); // 500 Internal Server Error
-        }
-    }
 
     public function getInfo($id){
 

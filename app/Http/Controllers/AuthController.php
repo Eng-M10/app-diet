@@ -16,7 +16,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'nome' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'genero' => 'required|in:1,3',
+            'genero' => 'required|in:1,2',
             'senha' => 'required|string|min:8',
             'idade' => 'required|integer',
             'peso' => 'required|numeric',
@@ -31,7 +31,7 @@ class AuthController extends Controller
         if(intval($validated['genero']) === 1){
             $tmb = (10 * intval($validated['peso'])) + (6.25 * intval($validated['altura'])) - (5 * intval($validated['idade'])) + 5;
 
-        }elseif (intavl($validated['genero']) === 2){
+        }elseif (intval($validated['genero']) === 2){
             $tmb = (10 * intval($validated['peso'])) + (6.25 * intval($validated['altura'])) - (5 * intval($validated['idade'])) - 161;
 
         }

@@ -156,9 +156,52 @@ class AuthController extends Controller
 }
 }
 
+public function updateUser(Request $request, $id): JsonResponse
+{
+    // Encontrar o Utilizador pelo ID
+    $user = User::findOrFail($id);
 
+    if (!$user) {
+        return response()->json(['message' => 'Usuário não autenticado'], 401); // Retorna erro se não autenticado
+    }
 
+    // Retorna os dados do usuário autenticado
+    return response()->json([
+        'id' => $user->id,
+        'nome' => $user->name,
+        'email' => $user->email,
+        'idade' => $user->idade,
+        'sexo' => $user->sexo,
+        'peso' => $user->peso,
+        'altura' => $user->altura,
+        'objetivo' => $user->objetivo,
+        'restricoes' => $user->restricoes,
+        'necessidade_calorica' => $user->necessidade_calorica,
+    ]);
+}
 
+public function updatePassword(Request $request): JsonResponse
+{
+    // Validar os dados de entrada
+    $validated = $request->validate([
+        'senha_atual' => 'required|string|min:8',
+        'nova_senha' => 'required|string|min:8|different:senha_atual',
+    ]);
+
+    // Encontrar o usuário autenticado
+    $user = $request->user();
+
+    // Verificar se a senha atual está correta
+    if (!Hash::check($validated['senha_atual'], $user->password)) {
+        return response()->json(['message' => 'A senha atual está incorreta.'], 403); // 403 Forbidden
+    }
+
+    // Atualizar a senha do usuário
+    $user->password = Hash::make($validated['nova_senha']);
+    $user->save();
+
+    return response()->json(['message' => 'Senha atualizada com sucesso!']);
+}
 
 
 }

@@ -46,7 +46,7 @@ class SugestaoSeeder extends Seeder
                 'restricoes_para' =>  'Nenhuma',
             ],
             [
-                'nome' => 'Quinoa com Frango Desfiado',
+             'nome' => 'Quinoa com Frango Desfiado',
                 'descricao' => 'Quinoa cozida com frango desfiado e vegetais frescos.',
                 'calorias' => 300,
                 'proteinas' => 28.0,
@@ -58,7 +58,7 @@ class SugestaoSeeder extends Seeder
 
             // Sugestões para +/-calorias
             [
-                'nome' => 'Salada de Quinoa com Abacate',
+             'nome' => 'Salada de Quinoa com Abacate',
                 'descricao' => 'Quinoa cozida com legumes frescos e abacate.',
                 'calorias' => 220,
                 'proteinas' => 8.0,
@@ -68,6 +68,7 @@ class SugestaoSeeder extends Seeder
                 'restricoes_para' => 'Nenhuma',
             ],
             [
+
                 'nome' => 'Iogurte Natural com Granola',
                 'descricao' => 'Iogurte natural com granola e frutas frescas.',
                 'calorias' => 180,
@@ -88,6 +89,7 @@ class SugestaoSeeder extends Seeder
                 'restricoes_para' => 'Mariscos',
             ],
             [
+
                 'nome' => 'Arroz Integral com Legumes',
                 'descricao' => 'Arroz integral cozido com legumes variados.',
                 'calorias' => 200,
@@ -100,6 +102,8 @@ class SugestaoSeeder extends Seeder
 
             // Sugestões para -calorias
             [
+
+
                 'nome' => 'Batata Doce Assada',
                 'descricao' => 'Batata doce assada no forno com azeite e alecrim.',
                 'calorias' => 180,
@@ -110,6 +114,8 @@ class SugestaoSeeder extends Seeder
                 'restricoes_para' =>  'Nenhuma',
             ],
             [
+
+
                 'nome' => 'Peixe Branco Grelhado com Legumes',
                 'descricao' => 'Filé de peixe branco grelhado com legumes cozidos.',
                 'calorias' => 190,
@@ -120,6 +126,7 @@ class SugestaoSeeder extends Seeder
                 'restricoes_para' => 'Mariscos',
             ],
             [
+
                 'nome' => 'Sopa de Legumes',
                 'descricao' => 'Sopa nutritiva de legumes com baixo teor calórico.',
                 'calorias' => 120,
@@ -130,6 +137,7 @@ class SugestaoSeeder extends Seeder
                 'restricoes_para' =>  'Nenhuma' ,
             ],
             [
+
                 'nome' => 'Frango Desfiado com Abobrinha',
                 'descricao' => 'Frango desfiado refogado com abobrinha e temperos naturais.',
                 'calorias' => 140,

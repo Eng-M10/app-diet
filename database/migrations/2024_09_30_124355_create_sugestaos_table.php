@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('sugestaos', function (Blueprint $table) {
             $table->id();
+
             $table->string('nome');
             $table->text('descricao');
             $table->integer('calorias');

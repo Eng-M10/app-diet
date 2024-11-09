@@ -25,6 +25,13 @@ class SugestaoController extends Controller
             'sugestao' => $food
         ]);
     }
+    public function todasRefeicao (): JsonResponse{
+
+        $food = Sugestao::all();
+        return response()->json([
+            'sugestao' => $food
+        ]);
+    }
 
     // Função para aplicar as regras
     private function aplicarRegras($userProfile)

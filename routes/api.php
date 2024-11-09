@@ -13,4 +13,5 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->put('/update-password', [AuthController::class, 'updatePassword']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 Route::middleware('auth:sanctum')->get('/sugestoes/{id}', [SugestaoController::class, 'sugerirRefeicao']);
+Route::middleware('auth:sanctum')->get('/todas-sugestoes', [SugestaoController::class, 'todasRefeicao']);
 Route::middleware('auth:sanctum')->get('/informacoes/{id}', [AuthController::class, 'getInfo']);

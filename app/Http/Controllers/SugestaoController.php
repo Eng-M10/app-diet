@@ -67,7 +67,8 @@ class SugestaoController extends Controller
             $sugestoes = Sugestao::whereNotIn('restricoes_para', $restricoes)->get()->toArray();
             $resultado = [];
             $caloriasPorRefeicao = $caloriasDiarias / 3;
-                
+            $objetivo = $user->objetivo;
+
             // Função auxiliar para a busca DFS
             function dfs($sugestoes, $caloriasPorRefeicao, $combinacaoAtual, &$resultado, $indiceAtual, $refeicao)
             {
@@ -101,14 +102,14 @@ class SugestaoController extends Controller
 
             // Executa o DFS para compor as três refeições
             reiniciar:;
-            array_splice($resultado,0);
+            array_splice($resultado, 0);
             foreach (['cafe_da_manha', 'almoco', 'jantar'] as $refeicao) {
                 shuffle($sugestoes);  // Embaralha as sugestões
                 dfs($sugestoes, $caloriasPorRefeicao, [], $resultado, 0, $refeicao);
             }
 
             // Verifica se alguma combinação de refeições atende ao total de calorias diárias
-            
+
             foreach ($resultado['cafe_da_manha'] as $cafe) {
                 foreach ($resultado['almoco'] as $almoco) {
                     foreach ($resultado['jantar'] as $jantar) {
@@ -156,22 +157,25 @@ class SugestaoController extends Controller
                             return $total + $item['calorias'];
                         }, 0);
                         // Verificação de calorias totais
-                        if ($caloriasTotal <= $caloriasDiarias) {
+                        if ((($caloriasDiarias <= $caloriasTotal) && ($caloriasTotal <= 50 + $caloriasDiarias)) && $objetivo == 'Ganhar massa muscular') {
 
                             return response()->json([
                                 'cafe_da_manha' => $cafe,
                                 'almoco' => $almoco,
-                                'jantar' => $jantar
+                                'jantar' => $jantar,
+                                'Calorias' => $caloriasTotal
+                            ], 200, [], JSON_PRETTY_PRINT);
+                        } elseif ($caloriasTotal <= $caloriasDiarias && (($objetivo == 'Perder peso') || ($objetivo == 'Manter o peso')) && ($caloriasDiarias - $caloriasTotal) < 50) {
+
+                            return response()->json([
+                                'cafe_da_manha' => $cafe,
+                                'almoco' => $almoco,
+                                'jantar' => $jantar,
+                                'Calorias' => $caloriasTotal
                             ], 200, [], JSON_PRETTY_PRINT);
                         } else {
                             goto reiniciar;
                         }
-                        return response()->json([
-                            'cafe_da_manha' => $caloriasCafe,
-                            'almoco' => $caloriasAlmoco,
-                            'jantar' => $caloriasJantar,
-                            'Total' => $caloriasTotal
-                        ], 200, [], JSON_PRETTY_PRINT);
                     }
                 }
             }

@@ -82,11 +82,6 @@ class SugestaoController extends Controller
                     return true;
                 }
 
-                // Retorna se as calorias atuais excederem ou o limite de itens for atingido
-                if ($caloriasAtuais > $caloriasPorRefeicao || count($combinacaoAtual) > 5) {
-                    return false;
-                }
-
                 // Busca recursiva por combinações de sugestões
                 for ($i = $indiceAtual; $i < count($sugestoes); $i++) {
                     $sugestao = $sugestoes[$i];

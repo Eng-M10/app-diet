@@ -14,5 +14,5 @@ Route::middleware('auth:sanctum')->put('/update-password', [AuthController::clas
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
 Route::middleware('auth:sanctum')->get('/sugestoes/{id}', [SugestaoController::class, 'sugerirRefeicao']);
-Route::middleware('auth:sanctum')->get('/planoAlimentar/{id}', [SugestaoController::class, 'criarPlanoAlimentar']);
+Route::middleware('auth:sanctum')->get('/planoAlimentar/{id}/{numeroRefeicoes}', [SugestaoController::class, 'criarPlanoAlimentar']);
 Route::middleware('auth:sanctum')->get('/informacoes/{id}', [AuthController::class, 'getInfo']);

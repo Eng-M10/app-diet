@@ -50,7 +50,7 @@ class SugestaoController extends Controller
     }
 
 
-    public function criarPlanoAlimentar($id): JsonResponse
+    public function criarPlanoAlimentar($id, $numeroRefeicoes): JsonResponse
     {
         try {
             // Busca o usuário e valida
@@ -58,133 +58,96 @@ class SugestaoController extends Controller
             if (!$user) {
                 return response()->json(['error' => 'Usuário não encontrado.'], 404);
             }
+            if ($numeroRefeicoes < 2) {
+                return response()->json(['error' => 'Número de Refeições Inválido'], 404);
+            }
 
             // Obtem restrições e necessidade calórica
-            $restricoes = explode(',', $user->restricoes); // Supondo que as restrições estejam armazenadas em uma string separada por vírgulas
+            $restricoes = explode(',', $user->restricoes);
             $caloriasDiarias = $user->necessidade_calorica;
-
-            // Filtra sugestões sem as restrições do usuário
             $sugestoes = Sugestao::whereNotIn('restricoes_para', $restricoes)->get()->toArray();
             $resultado = [];
-            $caloriasPorRefeicao = $caloriasDiarias / 3;
+            $caloriasPorRefeicao = $caloriasDiarias / $numeroRefeicoes;
             $objetivo = $user->objetivo;
+            switch ($numeroRefeicoes) {
+                case 2:
+                    $nomeRefeicoes = ['almoco', 'jantar'];
+                    break;
+                case 3:
+                    $nomeRefeicoes = ['cafe_da_manha', 'almoco', 'jantar'];
+                    break;
+                case 4:
+                    $nomeRefeicoes = ['cafe_da_manha', 'almoco', 'lanche_da_tarde', 'jantar'];
+                    break;
+                case 5:
+                    $nomeRefeicoes = ['cafe_da_manha', 'lanche_da_manha', 'almoco', 'lanche_da_tarde', 'jantar'];
+            }
+
 
             // Função auxiliar para a busca DFS
             function dfs($sugestoes, $caloriasPorRefeicao, $combinacaoAtual, &$resultado, $indiceAtual, $refeicao)
             {
-                // Calcula as calorias da combinação atual
                 $caloriasAtuais = array_reduce($combinacaoAtual, function ($total, $item) {
                     return $total + $item['calorias'];
                 }, 0);
 
-                // Adiciona a combinação ao resultado se atingir o objetivo calórico da refeição
                 if ($caloriasAtuais >= $caloriasPorRefeicao) {
                     $resultado[$refeicao][] = $combinacaoAtual;
                     return true;
                 }
 
-                // Busca recursiva por combinações de sugestões
                 for ($i = $indiceAtual; $i < count($sugestoes); $i++) {
                     $sugestao = $sugestoes[$i];
                     $combinacaoAtual[] = $sugestao;
-
-                    // Chama a função recursivamente
                     if (dfs($sugestoes, $caloriasPorRefeicao, $combinacaoAtual, $resultado, $i + 1, $refeicao)) {
                         return true;
                     }
-
-                    // Remove a última sugestão ao voltar da chamada recursiva
                     array_pop($combinacaoAtual);
                 }
 
                 return false;
             }
 
-            // Executa o DFS para compor as três refeições
+            // Tenta compor refeições com calorias adequadas para o número de refeições desejado
             reiniciar:;
-            array_splice($resultado, 0);
-            foreach (['cafe_da_manha', 'almoco', 'jantar'] as $refeicao) {
-                shuffle($sugestoes);  // Embaralha as sugestões
-                dfs($sugestoes, $caloriasPorRefeicao, [], $resultado, 0, $refeicao);
-            }
+            array_splice($resultado,0);
+            do {
+                $resultado = [];
+                for ($i = 0; $i < $numeroRefeicoes; $i++) {
+                    $refeicao = $nomeRefeicoes[$i];
+                    shuffle($sugestoes);
+                    dfs($sugestoes, $caloriasPorRefeicao, [], $resultado, 0, $refeicao);
+                }
 
-            // Verifica se alguma combinação de refeições atende ao total de calorias diárias
-
-            foreach ($resultado['cafe_da_manha'] as $cafe) {
-                foreach ($resultado['almoco'] as $almoco) {
-                    foreach ($resultado['jantar'] as $jantar) {
-
-                        $caloriasCafe = array_reduce(array_merge($cafe), function ($total, $item) {
+                // Calcula o total de calorias para verificar se atende aos requisitos
+                $caloriasTotal = 0;
+                foreach (array_slice($nomeRefeicoes, 0, $numeroRefeicoes) as $refeicao) {
+                    foreach ($resultado[$refeicao] as $comb) {
+                        $caloriasTotal += array_reduce($comb, function ($total, $item) {
                             return $total + $item['calorias'];
                         }, 0);
-
-                        $caloriasAlmoco = array_reduce(array_merge($almoco), function ($total, $item) {
-                            return $total + $item['calorias'];
-                        }, 0);
-
-                        $caloriasJantar = array_reduce(array_merge($jantar), function ($total, $item) {
-                            return $total + $item['calorias'];
-                        }, 0);
-
-                        // Calcular as calorias totais
-                        $caloriasTotal = array_reduce(array_merge($cafe, $almoco, $jantar), function ($total, $item) {
-                            return $total + $item['calorias'];
-                        }, 0);
-
-                        // Calorias esperadas para cada refeição
-                        $caloriasPorRefeicao = $caloriasDiarias / 3;
-                        $direfecaCalorias = 0;
-                        // Ajuste para o café da manhã se as calorias forem maiores que o esperado
-                        if ($caloriasCafe > $caloriasPorRefeicao & sizeof($cafe) > 1) {
-                            $direfecaCalorias = $caloriasCafe - $caloriasPorRefeicao;
-
-                            //remover o ultimo elemento
-                            array_pop($cafe);
-                        }
-
-                        if ($caloriasJantar < $caloriasPorRefeicao + $direfecaCalorias & sizeof($jantar) > 1) {
-                            $diferenca = $caloriasPorRefeicao - $caloriasJantar;
-                            array_pop($jantar);
-                        }
-
-                        // Se o almoço tiver menos calorias que o esperado, ajustar com o valor da refeição anterior
-                        if ($caloriasAlmoco < $caloriasPorRefeicao + $direfecaCalorias & sizeof($almoco) > 1) {
-                            $diferenca = $caloriasPorRefeicao - $caloriasAlmoco;
-                            array_pop($almoco);
-                        }
-
-                        $caloriasTotal = array_reduce(array_merge($cafe, $almoco, $jantar), function ($total, $item) {
-                            return $total + $item['calorias'];
-                        }, 0);
-                        // Verificação de calorias totais
-                        if ((($caloriasDiarias <= $caloriasTotal) && ($caloriasTotal <= 50 + $caloriasDiarias)) && $objetivo == 'Ganhar massa muscular') {
-
-                            return response()->json([
-                                'cafe_da_manha' => $cafe,
-                                'almoco' => $almoco,
-                                'jantar' => $jantar,
-                                'Calorias' => $caloriasTotal
-                            ], 200, [], JSON_PRETTY_PRINT);
-                        } elseif ($caloriasTotal <= $caloriasDiarias && (($objetivo == 'Perder peso') || ($objetivo == 'Manter o peso')) && ($caloriasDiarias - $caloriasTotal) < 50) {
-
-                            return response()->json([
-                                'cafe_da_manha' => $cafe,
-                                'almoco' => $almoco,
-                                'jantar' => $jantar,
-                                'Calorias' => $caloriasTotal
-                            ], 200, [], JSON_PRETTY_PRINT);
-                        } else {
-                            goto reiniciar;
-                        }
                     }
                 }
-            }
 
+                // Verifica se o total de calorias está dentro do limite para o objetivo do usuário
+                if (($objetivo == 'Ganhar massa muscular' && $caloriasTotal >= $caloriasDiarias && $caloriasTotal <= $caloriasDiarias + 50) ||
+                    (($objetivo == 'Perder peso' || $objetivo == 'Manter o peso') && $caloriasTotal <= $caloriasDiarias && $caloriasDiarias - $caloriasTotal < 50)
+                ) {
+                    $planoAlimentar = [];
+                    foreach (array_slice($nomeRefeicoes, 0, $numeroRefeicoes) as $refeicao) {
+                        $planoAlimentar[$refeicao] = $resultado[$refeicao];
+                    }
+                    return response()->json([
+                        'planoAlimentar' => $planoAlimentar,
+                        'Calorias' => $caloriasTotal
+                    ], 200, [], JSON_PRETTY_PRINT);
+                }else{
+                    goto reiniciar;
+                }
+            } while (true);
 
-            // Retorna uma mensagem em JSON se nenhuma combinação atender aos requisitos
             return response()->json(['message' => 'Não foi possível encontrar um plano alimentar que atenda às restrições e calorias diárias desejadas.'], 200);
         } catch (\Exception $e) {
-            // Captura qualquer erro e retorna uma mensagem de erro com o código de status 500
             return response()->json([
                 'error' => 'Ocorreu um erro ao tentar criar o plano alimentar.',
                 'message' => $e->getMessage()

@@ -58,8 +58,8 @@ class SugestaoController extends Controller
             if (!$user) {
                 return response()->json(['error' => 'Usuário não encontrado.'], 404);
             }
-            if ($numeroRefeicoes < 2) {
-                return response()->json(['error' => 'Número de Refeições Inválido'], 404);
+            if ($numeroRefeicoes < 2 && $numeroRefeicoes > 5) {
+                return response()->json(['error' => 'Número Inválido de Refeições escolha um intervalo de 2-5'], 401);
             }
 
             // Obtem restrições e necessidade calórica
@@ -69,18 +69,19 @@ class SugestaoController extends Controller
             $resultado = [];
             $caloriasPorRefeicao = $caloriasDiarias / $numeroRefeicoes;
             $objetivo = $user->objetivo;
+            $nomesRedeicoes=[];
             switch ($numeroRefeicoes) {
                 case 2:
-                    $nomeRefeicoes = ['almoco', 'jantar'];
+                    $nomeRefeicoes = ['Almoço', 'Jantar'];
                     break;
                 case 3:
-                    $nomeRefeicoes = ['cafe_da_manha', 'almoco', 'jantar'];
+                    $nomeRefeicoes = ['Café Da Manhã', 'Almoço', 'Jantar'];
                     break;
                 case 4:
-                    $nomeRefeicoes = ['cafe_da_manha', 'almoco', 'lanche_da_tarde', 'jantar'];
+                    $nomeRefeicoes = ['Café Da Manhã', 'Almoço', 'Lanche Da Tarde', 'Jantar'];
                     break;
                 case 5:
-                    $nomeRefeicoes = ['cafe_da_manha', 'lanche_da_manha', 'almoco', 'lanche_da_tarde', 'jantar'];
+                    $nomeRefeicoes = ['Café Da Manhã', 'Lanhe Da Manhã', 'Almoço', 'Lanhe Da Tarde', 'Jantar'];
             }
 
 
@@ -115,6 +116,7 @@ class SugestaoController extends Controller
                 $resultado = [];
                 for ($i = 0; $i < $numeroRefeicoes; $i++) {
                     $refeicao = $nomeRefeicoes[$i];
+                    $nomesRedeicoes[$i]['nome']=$nomeRefeicoes[$i];
                     shuffle($sugestoes);
                     dfs($sugestoes, $caloriasPorRefeicao, [], $resultado, 0, $refeicao);
                 }
@@ -137,8 +139,10 @@ class SugestaoController extends Controller
                     foreach (array_slice($nomeRefeicoes, 0, $numeroRefeicoes) as $refeicao) {
                         $planoAlimentar[$refeicao] = $resultado[$refeicao];
                     }
+                    
                     return response()->json([
                         'planoAlimentar' => $planoAlimentar,
+                        'refeicao' => $nomesRedeicoes,
                         'Calorias' => $caloriasTotal
                     ], 200, [], JSON_PRETTY_PRINT);
                 }else{
